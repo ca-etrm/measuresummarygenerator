@@ -1,0 +1,328 @@
+import re
+import PIL.Image as Image
+import json
+import datetime as dt
+import customtkinter as ctk
+from types import UnionType, NoneType
+from urllib.parse import urlparse
+from typing import (
+    Type,
+    TypeVar,
+    overload,
+    NewType,
+    get_args,
+    get_origin,
+    Any
+)
+
+from src import asset_path, patterns
+
+
+_NotDefined = NewType('_NotDefined', None)
+
+_T = TypeVar('_T')
+_U = TypeVar('_U')
+
+
+@overload
+def getc(o: dict, name: str, _type: Type[_T], /) -> _T:
+    ...
+
+
+@overload
+def getc(o: dict, name: str, _type: None, /) -> None:
+    ...
+
+
+@overload
+def getc(o: dict, name: str, _type: Type[_T], default: _U, /) -> _T | _U:
+    ...
+
+
+@overload
+def getc(o: dict, name: str, _type: None, default: _U, /) -> None | _U:
+    ...
+
+
+def getc(o: dict,
+         name: str,
+         _type: Type[_T] | None,
+         default: _U | Type[_NotDefined]=_NotDefined
+        ) -> _T | _U | None:
+    """Alternative for `dict.get()` that casts the attribute to `_type`."""
+
+    try:
+        attr = o.get(name)
+    except AttributeError:
+        if default is _NotDefined:
+            raise
+        return default
+
+    attr_type = type(attr)
+    _types = get_args(_type)
+    _origin = get_origin(_type)
+
+    if _origin is None:
+        try:
+            return _type(attr)
+        except:
+            raise TypeError(f'cannot cast attribute to type {_type}')
+    elif _origin is list:
+        if not isinstance(attr, list):
+            raise TypeError(f'field {name} does not map to a list')
+
+        if len(_types) > 1:
+            if len(attr) != len(_types):
+                raise TypeError(f'incompatible lists')
+            results = []
+            for i, list_type in enumerate(_types):
+                try:
+                    results.append(list_type(attr[i]))
+                except:
+                    raise TypeError(f'incompatible types: {type(attr[i])}'
+                                    f' != {list_type}')
+            return results
+
+        list_type = _types[0]
+        if list_type is UnionType:
+            list_types = get_args(list_type)
+            results = []
+            for item in attr:
+                i = 0
+                for union_type in list_types:
+                    try:
+                        results.append(union_type(item))
+                        break
+                    except:
+                        i = i + 1
+                if i == len(_types):
+                    raise TypeError(f'list item {attr} cannot cast to'
+                                    f' any of {_types}')
+            return results
+
+        try:
+            return list(map(lambda item: list_type(item), attr))
+        except Exception as err:
+            raise TypeError(f'list item {attr} cannot cast to'
+                            f' {list_type}') from err
+    elif _origin is dict:
+        # TODO implement type union support
+        if not isinstance(attr, dict):
+            raise TypeError(f'field {name} does not map to a dict')
+
+        args_len = len(_types)
+        if args_len < 3:
+            key_type = _types[0]
+            val_type = Any if args_len < 2 else _types[1]
+            for _key, _val in attr.items():
+                try:
+                    key_type(_key)
+                except:
+                    raise TypeError(f'type {type(_key)} is not compatible'
+                                    f' with key type {key_type}')
+                if args_len == 2:
+                    try:
+                        val_type(_val)
+                    except:
+                        raise TypeError(f'type {type(_val)} is not compatible'
+                                        f' with val type {val_type}')
+            return attr
+
+        raise TypeError(f'unsupported dict type: {_type}')
+    elif _origin is UnionType:
+        if NoneType in _types and attr == None:
+            return None
+
+        for union_type in _types:
+            try:
+                return union_type(attr)
+            except:
+                continue
+        type_union = ' | '.join(_types)
+        raise TypeError(f'cannot cast attribute of type {attr_type}'
+                        f' to {type_union}')
+    else:
+        raise TypeError(f'unsupported type: {_origin}')
+
+
+class JSONObject:
+    """Interface for converting a JSON string or object into a class.
+
+    Extend when defining a class representation of a JSON object.
+
+    Useful Methods:
+        - `get` returns the type-hinted contents of a JSON field
+    """
+
+    def __init__(self, _json: str | dict[str, Any]):
+        if isinstance(_json, str):
+            self.json: dict[str, Any] = json.loads(_json)
+        else:
+            self.json = _json
+
+    @overload
+    def get(self, name: str, _type: Type[_T], /) -> _T:
+        ...
+
+    @overload
+    def get(self, name: str, _type: None, /) -> None:
+        ...
+
+    @overload
+    def get(self, name: str, _type: Type[_T], default: _U, /) -> _T | _U:
+        ...
+
+    @overload
+    def get(self, name: str, _type: None, default: _U, /) -> None | _U:
+        ...
+
+    def get(self,
+            name: str,
+            _type: Type[_T] | None,
+            default: _U | Type[_NotDefined]=_NotDefined
+           ) -> _T | _U | None:
+        return getc(self.json, name, _type, default)
+
+
+def get_tkimage(light_image: str,
+                dark_image: str | None=None,
+                size: tuple[int, int]=(20, 20)
+               ) -> ctk.CTkImage:
+    light_path = asset_path(light_image, 'images')
+    _light_image = Image.open(light_path)
+    _dark_image = None
+    if dark_image != None:
+        dark_path = asset_path(dark_image, 'images')
+        _dark_image = Image.open(dark_path)
+    return ctk.CTkImage(light_image=_light_image,
+                        dark_image=_dark_image or _light_image,
+                        size=size)
+
+
+def rotate_matrix(matrix: list[list[_T]]) -> list[list[_T]]:
+    """Assumes non-ragged rows on the 2D plane of
+    the matrix
+    """
+
+    return [list(elems) for elems in zip(*matrix)]
+
+
+def statewide_key(statewide_id) -> int:
+    """Sorting key for measure statewide IDs"""
+
+    from src import patterns
+
+    re_match = re.fullmatch(patterns.STWD_ID, statewide_id)
+    if re_match is None:
+        return -1
+
+    key = 0
+    measure_type = re_match.group(2)
+    key += sum([ord(c) * 1000 for c in measure_type])
+
+    use_category = re_match.group(3)
+    key += sum([ord(c) * 1000 for c in use_category])
+
+    uc_version = re_match.group(4)
+    key += int(uc_version) * 100
+
+    return key
+
+
+def version_key(full_version_id: str) -> int:
+    """
+    Sorting key for measure versions.
+    Assign a numerical value to each measure ID (based on "SW"-[UseCat]-[MajorVersion#]-[MinorVersion#])
+    """
+
+    from src import patterns
+
+    re_match = re.fullmatch(patterns.VERSION_ID, full_version_id)
+    if re_match is None:
+        return -1
+
+    key = 0
+    measure_type = re_match.group(3)                   #ex type: "SW"
+    key += sum([ord(c) * 1000 for c in measure_type])  #ex result: key = 170000
+
+    use_category = re_match.group(4)                   #ex type: AP
+    key += sum([ord(c) * 1000 for c in use_category])  #ex result = 170000+x= 315000
+
+    uc_version = re_match.group(5)                     #ex type: 001
+    key += int(uc_version) * 100
+
+    version_id = re_match.group(6)                     #get the version ID
+    try:
+        version, _ = version_id.split('-', 1)          #try to split the string to assign major version # to "version", and the minor version # to "_"
+        version = int(version)                         #--> convert major version number to int
+        draft = 0                                      #--> set a draft var to 0
+    except ValueError:
+        version = int(version_id)                      #--> if there is an error (no minor version), set draft to -1
+        draft = -1
+
+    key += version * 10
+    key += draft
+    return key
+
+
+def to_date(date_str: str) -> dt.date:
+    """Converts a date string of format `YYYY-MM-DD` to a
+    datetime object.
+    """
+
+    if re.fullmatch(patterns.DATE, date_str):
+        year, month, day = date_str.split('-', 2)
+    elif re.fullmatch(patterns.DATE_MMDDYYYY, date_str):
+        month, day, year = date_str.split('/', 2)
+    else:
+        raise RuntimeError(
+            f'Invalid Date Format: {date_str}'
+        )
+    
+    try:
+        end_date = dt.date(int(year), int(month), int(day))
+    except ValueError as err:
+        raise RuntimeError(
+            f'Invalid Date Format: {date_str}'
+        ) from err
+
+    return end_date
+
+
+def convert_from_utc(date_string: str) -> dt.datetime:
+    return dt.datetime.strptime(
+        date_string,
+        r"%Y-%m-%dT%H:%M:%SZ"
+    ).replace(
+        tzinfo=dt.timezone.utc
+    )
+
+
+class ParsedUrl:
+    def __init__(self, url: str):
+        parsed_result = urlparse(url)
+        self.scheme = parsed_result.scheme
+        self.netloc = parsed_result.netloc
+        self.path = parsed_result.path
+        self.query = self.get_queries(parsed_result.query)
+
+    def get_queries(self, query_str: str | bytes) -> dict[str, str | None]:
+        if isinstance(query_str, bytes):
+            query_str = query_str.decode()
+
+        if query_str == '':
+            return {}
+
+        url_queries: dict[str, str | None] = {}
+        queries = query_str.split('&')
+        for query in queries:
+            try:
+                key, val = query.split('=')
+                url_queries[key] = val
+            except ValueError:
+                url_queries[query] = None
+        return url_queries
+
+
+def parse_url(url: str) -> ParsedUrl:
+    return ParsedUrl(url)

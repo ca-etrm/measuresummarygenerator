@@ -1,0 +1,61 @@
+{
+    "SWAP": {
+        "text": "SWAP Summary 2025-12-05",
+        "reftag": "R3200",
+        "url": "https://www.caetrm.com/media/reference-documents/SWAP_Summary_2025-12-23.xlsx"
+    },
+    "SWBE": {
+        "text": "SWBE Summary 2025-12-05",
+        "reftag": "R3201",
+        "url": "https://www.caetrm.com/media/reference-documents/SWBE_Summary_2025-12-23.xlsx"
+    },"SWCA": {
+        "text": "SWCA Summary 2025-12-05",
+        "reftag": "R3202",
+        "url": "https://www.caetrm.com/media/reference-documents/SWCA_Summary_2025-12-23.xlsx"
+    },"SWCR": {
+        "text": "SWCR Summary 2025-12-05",
+        "reftag": "R3203",
+        "url": "https://www.caetrm.com/media/reference-documents/SWCR_Summary_2025-12-23.xlsx"
+    },"SWFS": {
+        "text": "SWFS Summary 2025-12-05",
+        "reftag": "R3204",
+        "url": "https://www.caetrm.com/media/reference-documents/SWFS_Summary_2025-12-23.xlsx"
+    },"SWHC": {
+        "text": "SWHC Summary 2025-12-05",
+        "reftag": "R3205",
+        "url": "https://www.caetrm.com/media/reference-documents/SWHC_Summary_2025-12-23.xlsx"
+    },"SWLG": {
+        "text": "SWLG Summary 2025-12-05",
+        "reftag": "R3206",
+        "url": "https://www.caetrm.com/media/reference-documents/SWLG_Summary_2025-12-23.xlsx"
+    },"SWMI": {
+        "text": "SWMI Summary 2025-12-05",
+        "reftag": "R3207",
+        "url": "https://www.caetrm.com/media/reference-documents/SWMI_Summary_2025-12-23.xlsx"
+    },"SWPR": {
+        "text": "SWPR Summary 2025-12-05",
+        "reftag": "R3208",
+        "url": "https://www.caetrm.com/media/reference-documents/SWPR_Summary_2025-12-23.xlsx"
+    },"SWRE": {
+        "text": "SWRE Summary 2025-12-05",
+        "reftag": "R3209",
+        "url": "https://www.caetrm.com/media/reference-documents/SWRE_Summary_2025-12-23.xlsx"
+    },"SWSV": {
+        "text": "SWSV Summary 2025-12-05",
+        "reftag": "R3210",
+        "url": "https://www.caetrm.com/media/reference-documents/SWSV_Summary_2025-12-23.xlsx"
+    },"SWWB": {
+        "text": "SWWB Summary 2025-12-05",
+        "reftag": "R3211",
+        "url": "https://www.caetrm.com/media/reference-documents/SWWB_Summary_2025-12-23.xlsx"
+    },"SWWH": {
+        "text": "SWWH Summary 2025-12-05",
+        "reftag": "R3212",
+        "url": "https://www.caetrm.com/media/reference-documents/SWWH_Summary_2025-12-23.xlsx"
+    },
+    "SWWP": {
+        "text": "SWAP Summary 2025-12-05",
+        "reftag": "R3212",
+        "url": "https://www.caetrm.com/media/reference-documents/SWWP_Summary_2025-12-23.xlsx"
+    }
+}

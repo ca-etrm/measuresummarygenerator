@@ -1,0 +1,29 @@
+{
+    "$schema": "./revisions.schema.json",
+    "revisions": [
+        {
+            "version": 1.0,
+            "publish_date": "2025-03-23T20:07:05Z",
+            "description": "<div><p>Initial version of this POU TRM, replacing the previous <em>2017 CMUA Savings Estimation POU Technical Reference Manual</em>.</p><br><ul><li>New measure structure, terminology, and information.</li><li>New list of measures extracted and summarized from the CA electronic technical reference manual (eTRM).</li></ul></div>",
+            "owner": "CMUA"
+        },
+        {
+            "version": 1.1,
+            "publish_date": "2025-04-28T20:07:05Z",
+            "description": "<div>Official publication of the 2025 POU TRM with finalized list of measures. Other minor updates include:<ul><li>Added notes when the Oversized Offering ID and Base Case Description Tables file is needed for a measure</li><li>Updated the default EndDate calculation to account for leap year and to fall on the day before the day of the StartDate</li><li>Minor text and formatting updates</li></ul></div>",
+            "owner": "CMUA"
+        },
+        {
+            "version": 2.0,
+            "publish_date": "2025-12-05T20:07:05Z",
+            "description": "<div>Official publication of the 2026 POU TRM. Updates from the 2025 edition include:<ul><li>Finalized list of measures for the 2026 program year and code cycle and expired the program year 2025 measure versions</li><li>For measures with no EndDate in the eTRM, revised the POU TRM EndDate logic to add 3 years after the new program start date (e.g., 2026-01-01). For measures with older StartDate, the 3-years after StartDate logic may expire the measures for the new edition.</li><li>Replaced the embedded streamlined permutation spreadsheets with eTRM reference links, which reduces the overall PDF size while still allowing users to access the file without an eTRM login.</li><li>Added \u0022Fuel ID\u0022 field and definition to the eTRM data specification table and Key Terminology section for reference. Field is not utilized in the POU TRM</li></ul></div>",
+            "owner": "CMUA"
+        },
+        {
+            "version": 2.1,
+            "publish_date": "2026-03-30T20:07:05Z",
+            "description": "<div>Correction to the 2026 POU TRM to repopulate missing SWFS021-05 measure</div>",
+            "owner": "CMUA"
+        }
+    ]
+}
