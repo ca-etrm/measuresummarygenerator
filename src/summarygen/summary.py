@@ -932,7 +932,7 @@ class MeasureSummary:
             if val is None:
                 cost_map[key] = "-"
             else:
-                cost_map[key] = f"{val:.2f}"
+                cost_map[key] = f"{val:,.2f}"
 
         measure_id, version = self._cur_measure.full_version_id.split("-", 1)
         base_link = f"{ETRM_URL}/measure/{measure_id.lower()}/{version}/"

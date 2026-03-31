@@ -164,8 +164,8 @@ class PermutationsTable:
         all_costs: Series = pd.concat(
             [
                 nc_nr_rows[cnst.ULC_1] + nc_nr_rows[cnst.UMC_1],
-                ar_rows[cnst.ULC_2] + ar_rows[cnst.UMC_2],
-                Series([0.0] * len(other_rows))
+                ar_rows[cnst.ULC_2] + ar_rows[cnst.UMC_2]
+                #Series([0.0] * len(other_rows))
             ],
             ignore_index=True,
             sort=False
@@ -220,8 +220,8 @@ class PermutationsTable:
         all_costs: Series = pd.concat(
             [
                 nc_nr_rows[cnst.MTC_1],
-                ar_rows[cnst.MTC_2],
-                Series([0.0] * len(other_rows))
+                ar_rows[cnst.MTC_2]
+                #Series([0.0] * len(other_rows))
             ],
             ignore_index=True,
             sort=False
