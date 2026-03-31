@@ -163,7 +163,7 @@ class BasicTable(Table):
 
         # Validate input data
         if data == []:
-            raise SummaryGenError("Table data must not be empty")
+            raise SummaryGenError("Table date must not be empty")
 
         for index in self.header_indexes:
             if index < 0:
@@ -456,16 +456,16 @@ class BasicTable(Table):
 
                 _, col_span = self.span_dict.get(str((y, x)), (0, 0))
                 if col_span > 1:
-                    col_width = sum(_col_widths[x:x + col_span])
+                    col_width = sum(_col_widths[x:x + col_span - 1])
                 else:
                     col_width = _col_widths[x]
 
-                height = 0.0
+                # Also probably not correct for the same reasons as the widths
                 try:
                     if isinstance(cell, Flowable):
                         height = get_flowable_height(cell)
-                    elif isinstance(cell, (int, float)):
-                        height = float(cell) * 9
+                    if isinstance(cell, (int,float)):
+                        height = cell * 9
                     else:
                         frags = wrap_elements(cell.elements, col_width - h_padding)
                         height = cell.height * len(frags)
@@ -517,7 +517,7 @@ class BasicTable(Table):
             for x, cell in enumerate(table_row):
                 _, col_span = self.span_dict.get(str((y, x)), (0, 0))
                 if col_span > 1:
-                    cell_width = sum(cell_widths[x:x + col_span])
+                    cell_width = sum(cell_widths[x:x + col_span - 1])
                 else:
                     cell_width = cell_widths[x]
 
@@ -573,7 +573,7 @@ class BasicTable(Table):
 
                     _, col_span = self.span_dict.get(str((y, x)), (0, 0))
                     if col_span > 1:
-                        col_width = sum(self.col_widths[x:x + col_span])
+                        col_width = sum(self.col_widths[x:x + col_span - 1])
                     else:
                         col_width = self.col_widths[x]
 
