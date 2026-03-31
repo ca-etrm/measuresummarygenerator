@@ -165,7 +165,7 @@ class PermutationsTable:
             [
                 nc_nr_rows[cnst.ULC_1] + nc_nr_rows[cnst.UMC_1],
                 ar_rows[cnst.ULC_2] + ar_rows[cnst.UMC_2],
-                Series([0.0] * other_rows.size)
+                Series([0.0] * len(other_rows))
             ],
             ignore_index=True,
             sort=False
@@ -221,7 +221,7 @@ class PermutationsTable:
             [
                 nc_nr_rows[cnst.MTC_1],
                 ar_rows[cnst.MTC_2],
-                Series([0.0] * other_rows.size)
+                Series([0.0] * len(other_rows))
             ],
             ignore_index=True,
             sort=False
