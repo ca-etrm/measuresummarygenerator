@@ -291,7 +291,7 @@ class PermutationsTable:
         return val
 
     def get_rul_years(self) -> float | None:
-        eul_yrs = self.data.loc[
+        aoe_eul_yrs = self.data.loc[
             self.data[cnst.MAT].eq("AOE")
         ][cnst.EUL]
 
@@ -299,13 +299,12 @@ class PermutationsTable:
             self.data[cnst.MAT].eq("AR")
         ][cnst.RUL]
 
-        if eul_yrs.empty and rul_yrs.empty:
+        if aoe_eul_yrs.empty and rul_yrs.empty:
             return None
 
-        self.log_series("eul_yrs", eul_yrs)                                      #log the data to debug
-        self.log_series("rul_yrs", rul_yrs)                                      #log the data to debug
-        self.log_series(f"get_rul_years", (eul_yrs + rul_yrs))                   #log the data to debug
-        val = (eul_yrs + rul_yrs).mean()
+        rul_years: Series = pd.concat([aoe_eul_yrs, rul_yrs], ignore_index=True, sort=False)
+        self.log_series(f"get_rul_years", rul_years)                   #log the data to debug
+        val = rul_years.mean()
         if math.isnan(val):
             return 0.0
 
