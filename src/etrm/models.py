@@ -10,6 +10,7 @@ from src import utils
 from src.etrm import constants as cnst
 from src.etrm.exceptions import ETRMResponseError, ETRMConnectionError
 from src.utils import getc
+from pathlib import Path
 
 
 def convert_from_utc(date_string: str) -> dt.datetime:
@@ -40,6 +41,9 @@ def is_ar(row) -> bool:
 class PermutationsTable:
     def __init__(self, res_json: dict[str, Any]):
         self.json = res_json
+
+        self.debug_df = pd.DataFrame()       #Create a debug file to check the numbers
+        
         try:
             self.count = getc(res_json, 'count', int)
             self.links = getc(res_json, 'links', self._Links)
@@ -51,11 +55,11 @@ class PermutationsTable:
                 columns=self.headers
             )
 
-            columns = [list(col) for col in zip(*self.results)]
-            data: dict[str, list[str | float | None]] = {}
-            for x, header in enumerate(self.headers):
-                data[header] = columns[x]
-            self.data = DataFrame(data)
+            # columns = [list(col) for col in zip(*self.results)]
+            # data: dict[str, list[str | float | None]] = {}
+            # for x, header in enumerate(self.headers):
+            #     data[header] = columns[x]
+            # self.data = DataFrame(data)
 
         except IndexError:
             raise ETRMResponseError()
@@ -73,7 +77,27 @@ class PermutationsTable:
                 f'Permutation column {header} not found'
             ) from err
 
-    def join(self, table: PermutationsTable) -> None:
+    def log_perm_data(self):
+        """ Function to export permutation_data to debug the average impact calculation """
+        meas_version_id = self.__getitem__("MeasureVersionID").iloc[1]
+        base_dir = Path(__file__).resolve().parents[2]
+        debug_path = base_dir/"debug"/f"debug_perm_data_{meas_version_id}.csv"
+        self.data.to_csv(debug_path, index=True)
+
+    def log_series(self, name: str, series: pd.Series):
+        """ Function to export the field series that go to the averaging calculation to debug the average impact calculation """
+        meas_version_id = self.__getitem__("MeasureVersionID").iloc[1]
+        base_dir = Path(__file__).resolve().parents[2]
+        debug_path = base_dir/"debug"/f"debug_series_output_{meas_version_id}.csv"
+        
+        row_id = f"MeasDetailID_{name}"
+        self.debug_df[row_id] = self.__getitem__("MeasDetailID")  #Add the MeasureDetailID column for the series
+        self.debug_df[name] = series                              #Add series to file
+        self.debug_df.to_csv(debug_path, index=True)              #Export the csv (overwrite each time)
+
+
+    def join_result(self, table: PermutationsTable) -> None:
+        """ Function to append the API results of permutation API call  """
         if table.count == 0:
             return
 
@@ -81,6 +105,13 @@ class PermutationsTable:
             raise ETRMResponseError()
 
         self.results.extend(table.results)
+
+    def build_data_df(self) -> None:
+        """ Function to build the data df of the permutation API call """
+        self.data = DataFrame(
+                data=self.results,
+                columns=self.headers
+            )
 
     def get_nc_nr_rows(self) -> DataFrame:
         return self.data.loc[self.data.apply(is_nc_nr, axis=1)]
@@ -107,6 +138,7 @@ class PermutationsTable:
             sort=False
         )
 
+        self.log_series(f"get_std_savings_{nc_nr_field}", stnd_savings)                   #Log the data to debug
         val = stnd_savings.mean()
         if math.isnan(val):
             return 0.0
@@ -133,6 +165,7 @@ class PermutationsTable:
         if rows.empty:
             return None
 
+        self.log_series(f"get_existing_savings_{field}", rows[field])                   #log the data to debug
         val = rows[field].mean()
         if math.isnan(val):
             return 0
@@ -174,6 +207,7 @@ class PermutationsTable:
         if all_costs.empty:
             return None
 
+        self.log_series(f"get_base_case_cost", all_costs)                   #log the data to debug
         avg_cost = all_costs.mean()
         if math.isnan(avg_cost):
             return 0.0
@@ -201,6 +235,7 @@ class PermutationsTable:
         if all_costs.empty:
             return None
 
+        self.log_series(f"get_measure_cost", all_costs)                   #log the data to debug
         avg_cost = all_costs.mean()
         if math.isnan(avg_cost):
             return 0.0
@@ -230,6 +265,7 @@ class PermutationsTable:
         if all_costs.empty:
             return None
 
+        self.log_series(f"get_incremental_cost", all_costs)                   #log the data to debug
         val = all_costs.mean()
         if math.isnan(val):
             return 0.0
@@ -247,6 +283,7 @@ class PermutationsTable:
         if df.empty:
             return None
 
+        self.log_series(f"get_eul_years", df[cnst.EUL])                   #log the data to debug
         val = df[cnst.EUL].mean()
         if math.isnan(val):
             return 0.0
@@ -265,6 +302,9 @@ class PermutationsTable:
         if eul_yrs.empty and rul_yrs.empty:
             return None
 
+        self.log_series("eul_yrs", eul_yrs)                                      #log the data to debug
+        self.log_series("rul_yrs", rul_yrs)                                      #log the data to debug
+        self.log_series(f"get_rul_years", (eul_yrs + rul_yrs))                   #log the data to debug
         val = (eul_yrs + rul_yrs).mean()
         if math.isnan(val):
             return 0.0

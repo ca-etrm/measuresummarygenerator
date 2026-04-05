@@ -292,8 +292,8 @@ class ETRMConnection:
         if not _endpoint.startswith("/"):            #--> (above) If the passed-in endpt includes the base url (api), remove it
             _endpoint = "/" + _endpoint              #--> Add "/" to beginning of endpt if not already
 
-        if not _endpoint.endswith("/"):              #--> Add "/" to end of endpt if not already
-            _endpoint += "/"
+        # if not _endpoint.endswith("/"):              #--> Add "/" to end of endpt if not already
+        #     _endpoint += "/"
 
         _url = f"{self.api}{_endpoint}"              #put base url + endpt together (should now be valid)
         logger.info(f"ETRMConnection.get(): Making request to {_url}")
@@ -424,7 +424,7 @@ class ETRMConnection:
         if cached_versions is not None:
             return list(reversed(cached_versions))
 
-        response = self.get(f'/measures/{statewide_id}/')
+        response = self.get(f'/measures/{statewide_id}')
         response_body = MeasureVersionsResponse(response.json())
         measure_versions: list[str] = []
         for version_info in response_body.versions:
@@ -446,7 +446,7 @@ class ETRMConnection:
         if cached_ref is not None:
             return cached_ref
 
-        response = self.get(f'/references/{ref_id}/')
+        response = self.get(f'/references/{ref_id}')
         reference = Reference(response.json())
         self.cache.add_reference(ref_id, reference)
         return reference
@@ -619,25 +619,31 @@ class ETRMConnection:
         except:
             logger.info(f'Invalid statewide ID: {statewide_id}')
             raise
-
-        url = f'/measures/{statewide_id}/{version}/permutations'
+        
+        url_offset = 0
+        url = f'/measures/{statewide_id}/{version}/permutations?limit=10000'
         permutations_table: PermutationsTable | None = None
         while url is not None:
             response = self.get(url, stream=False)
             table = PermutationsTable(response.json())
-            if table.links.next is not None:
-                prev_url = utils.parse_url(url)
-                prev_offset = prev_url.query.get('offset', '')
-                parsed_url = utils.parse_url(table.links.next)
-                url_offset = parsed_url.query.get('offset', '')
-                if prev_offset == url_offset:
-                    break
+            if table.links.next is not None and url_offset < 500000:
+                
+                url_offset += 10000
+                url = f'/measures/{statewide_id}/{version}/permutations?limit=10000&offset={url_offset}'
+
+                # prev_url = utils.parse_url(url)
+                # prev_offset = prev_url.query.get('offset', '')
+                # parsed_url = utils.parse_url(table.links.next)
+                # url_offset = parsed_url.query.get('offset', '')
+                # if prev_offset == url_offset:
+                #     break
+            else:
+                url = None
 
             if permutations_table is None:
                 permutations_table = table
             else:
-                permutations_table.join(table)
+                permutations_table.join_result(table)
 
-            url = table.links.next
-
+        permutations_table.build_data_df()       
         return permutations_table

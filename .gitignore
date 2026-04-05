@@ -17,6 +17,7 @@ dist
 
 # logging
 /logs
+/debug
 
 # building
 /src/tmp
