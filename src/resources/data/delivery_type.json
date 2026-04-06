@@ -1,0 +1,73 @@
+{
+    "name": "Delivery Type",
+    "api_name": "DelivType",
+    "labels": [
+        {
+            "name": "C&S",
+            "api_name": "C&S",
+            "description": "Codes and Standards (C&S advocacy and related programs)"
+        },
+        {
+            "name": "DI",
+            "api_name": "DI",
+            "description": "Incentivizes the installation of an energy-efficient technology or service at a customer property by a program implementer managed third-party contractor or installer"
+        },
+        {
+            "name": "Down",
+            "api_name": "Down",
+            "description": "Incentivizes an energy-efficient technology or service to a participating customer for them to install or have installed"
+        },
+        {
+            "name": "Mid-Distr",
+            "api_name": "Mid-Distr",
+            "description": "Incentivizes an energy-efficient technology through a program adminstrator partnership with the distributor"
+        },
+        {
+            "name": "Mid-Retail",
+            "api_name": "Mid-Retail",
+            "description": "Incentivizes an energy-efficient technology through a program adminstrator partnership with the retailer"
+        },
+        {
+            "name": "Up-Manuf",
+            "api_name": "Up-Manuf",
+            "description": "Incentivizes an energy-efficient technology through a program adminstrator partnership with the manufacturer"
+        },
+        {
+            "name": "DnCust",
+            "api_name": "DnCust",
+            "description": "Downstream custom"
+        },
+        {
+            "name": "DnCustDI",
+            "api_name": "DnCustDI",
+            "description": "Downstream custom direct install"
+        },
+        {
+            "name": "DnDeemDI",
+            "api_name": "DnDeemDI",
+            "description": "Downstream deemed direct install"
+        },
+        {
+            "name": "DnDeemed",
+            "api_name": "DnDeemed",
+            "description": "Downstream deemed"
+        },
+        {
+            "name": "UpDeemed",
+            "api_name": "UpDeemed",
+            "description": "Upstream deemed"
+        }
+    ],
+    "description": "<p>Delivery type applicable for measure permutation.</p>",
+    "references": [],
+    "version": "DelivType-018",
+    "status": "CPUC Approved",
+    "change_description": "Synced automatically from CPUC Support Data using recipe Delivery Type",
+    "owner": "System Admin",
+    "is_published": true,
+    "committed_date": null,
+    "last_updated_date": "2025-12-31T09:10:12.893625Z",
+    "type": "shared_parameter",
+    "versions_url": "https://www.caetrm.com/api/v1/shared-parameters/DelivType/",
+    "url": "https://www.caetrm.com/api/v1/shared-parameters/DelivType/018/"
+}

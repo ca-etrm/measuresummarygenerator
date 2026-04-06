@@ -551,6 +551,7 @@ class ETRMConnection:
         arg: str | SharedDeterminantRef,
         version: str | None = None,
     ) -> SharedParameter:
+        logger.info(f'\t Start sr.etrm.connection.ETRMConnection.get_shared_parameter')
         if isinstance(arg, str):
             if version is None:
                 versions = self.get_shared_parameter_versions(arg)
@@ -566,10 +567,16 @@ class ETRMConnection:
 
         cached_param = self.cache.get_shared_parameter(name, version)
         if cached_param is not None:
+            logger.debug(f'\tget {name}-{version} shared param via cache')
             return cached_param
 
-        res = self.get(f"/shared-parameters/{name}/{version}")
-        param = SharedParameter(res.json())
+        if name.lower() == "delivtype":
+            logger.debug(f'\tget {name} shared param via src.resources')
+            param = resources.get_delivery_type_param()
+        else:
+            logger.debug(f'\tget {name}-{version} shared param via API call')
+            res = self.get(f"/shared-parameters/{name}/{version}")
+            param = SharedParameter(res.json())
         self.cache.add_shared_parameter(param)
         return param
 

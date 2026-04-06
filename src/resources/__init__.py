@@ -38,6 +38,8 @@ from .models import (
     SunsettedMeasuresSection
 )
 
+from src.etrm.models import SharedParameter
+
 logger = logging.getLogger(__name__)
 _PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -189,3 +191,7 @@ def get_use_category_intro_html() -> str:
 def get_sunsetted_measures() -> SunsettedMeasuresSection:
     data = get_json("data/sunsetted_measures.json")
     return SunsettedMeasuresSection(data)
+
+def get_delivery_type_param() -> SharedParameter:
+    data = get_json("data/delivery_type.json")
+    return SharedParameter(data)
