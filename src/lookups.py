@@ -6,7 +6,7 @@ USE_CATEGORIES = {
     'FS': 'Food Service',
     'HC': 'HVAC',
     'LG': 'Lighting',
-    'MI': 'Miscellanious',
+    'MI': 'Miscellaneous',
     'PR': 'Process',
     'RE': 'Recreation',
     'SV': 'Service',

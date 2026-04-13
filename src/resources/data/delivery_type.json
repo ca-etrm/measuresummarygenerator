@@ -20,17 +20,17 @@
         {
             "name": "Mid-Distr",
             "api_name": "Mid-Distr",
-            "description": "Incentivizes an energy-efficient technology through a program adminstrator partnership with the distributor"
+            "description": "Incentivizes an energy-efficient technology through a program administrator partnership with the distributor"
         },
         {
             "name": "Mid-Retail",
             "api_name": "Mid-Retail",
-            "description": "Incentivizes an energy-efficient technology through a program adminstrator partnership with the retailer"
+            "description": "Incentivizes an energy-efficient technology through a program administrator partnership with the retailer"
         },
         {
             "name": "Up-Manuf",
             "api_name": "Up-Manuf",
-            "description": "Incentivizes an energy-efficient technology through a program adminstrator partnership with the manufacturer"
+            "description": "Incentivizes an energy-efficient technology through a program administrator partnership with the manufacturer"
         },
         {
             "name": "DnCust",

@@ -12,7 +12,7 @@ match platform.system():
         raise RuntimeError(f"Unknown platform: {other}")
 
 
-START_TIME = dt(2026, 3, 31, 0, 0, 0) #dt.now()
+START_TIME = dt(2026, 4, 6, 0, 0, 0) #dt.now()
 __trm_version_date__ = START_TIME.strftime(rf"%B %#dth, %Y")
 __version__ = "2.1"
 __trm_title__ = "Technical Reference Manual for California Municipal Utilities Association: 2026 First Edition"
